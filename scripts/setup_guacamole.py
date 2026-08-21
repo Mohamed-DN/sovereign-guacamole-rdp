@@ -66,7 +66,7 @@ def main():
         "name": "Windows Work (VM2000)",
         "protocol": "rdp",
         "parameters": {
-            "hostname": "192.168.1.X_WINDOWS_IP",
+            "hostname": os.getenv("WINDOWS_IP", "192.168.1.100"),
             "port": "3389",
             "ignore-cert": "true",
             "security": "any",

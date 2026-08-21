@@ -51,12 +51,18 @@ If you are not a technical expert, don't worry! Just follow these three simple s
    ```bash
    cd sovereign-guacamole-rdp
    ```
-3. **Start the automated installation** (The Black Magic 🧙‍♂️) by running:
+3. ⚠️ **CRITICAL CONFIGURATION:** Open the `START_HERE.sh` file with a text editor (like `nano START_HERE.sh`) and edit the configuration variables at the top. You **MUST** enter your target Windows machine's IP address, or the automation will fail to connect. You can also customize your new admin username and password here.
+   ```bash
+   export GUAC_USER="admin"
+   export GUAC_PASS="SuperSecurePassword123!"
+   export WINDOWS_IP="192.168.1.100" # <-- CHANGE THIS
+   ```
+4. **Start the automated installation** (The Black Magic 🧙‍♂️) by running:
    ```bash
    bash START_HERE.sh
    ```
 
-**Done!** The script will run on its own for a few seconds, download all necessary components, and automatically configure every single detail for you.
+**Done!** The script will run on its own for a few seconds, download all necessary components, and automatically configure every single detail for you using the IPs and credentials you provided.
 
 ---
 
