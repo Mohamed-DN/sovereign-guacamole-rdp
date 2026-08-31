@@ -57,7 +57,7 @@ If you are not a technical expert, don't worry! Just follow these three simple s
    export GUAC_PASS="SuperSecurePassword123!"
    export WINDOWS_IP="192.168.1.100" # <-- CHANGE THIS
    ```
-4. **Start the automated installation** (The Black Magic 🧙‍♂️) by running:
+4. **Start the automated installation** (The Black Magic) by running:
    ```bash
    bash START_HERE.sh
    ```
