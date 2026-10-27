@@ -1,10 +1,11 @@
 # 🥑 Sovereign Guacamole RDP
 
-Welcome to the **Sovereign Guacamole RDP** project! 
-This is the ultimate, zero-touch "Black Magic" solution for deploying a professional Remote Desktop system (Apache Guacamole) completely automatically.
+A homelab automation project for deploying Apache Guacamole and configuring an RDP connection to a Windows machine.
+
+**Start with:** the [full architecture guide](docs/FULL_GUIDE.md), then inspect [START_HERE.sh](START_HERE.sh) and the [deployment script](scripts/deploy.sh) before executing them. The installer changes the target host and the Guacamole database. Review its assumptions, credentials, exposed ports and existing data first.
 
 Normally, installing Guacamole requires dozens of manual steps, complex database initializations, and endless clicks to add connections. 
-This repository **does everything for you**: it installs the servers, creates your custom secure user, destroys the default insecure accounts, adds your Windows computer connection, and injects graphics optimizations to eliminate lag. **All in 1-Click.**
+The deployment script is intended to automate the following steps: it installs the servers, creates your custom secure user, destroys the default insecure accounts, adds your Windows computer connection, and injects graphics optimizations to eliminate lag. Verify each step on the selected host.
 
 ---
 
@@ -44,7 +45,7 @@ graph TD
 
 ## 🚀 How to Install (1-Click Deployment)
 
-If you are not a technical expert, don't worry! Just follow these three simple steps:
+Use a dedicated lab host and review these four steps:
 
 1. **Clone this repository** onto your target server (e.g., inside a Proxmox LXC container).
 2. **Enter the directory**:
@@ -54,7 +55,7 @@ If you are not a technical expert, don't worry! Just follow these three simple s
 3. ⚠️ **CRITICAL CONFIGURATION:** Open the `START_HERE.sh` file with a text editor (like `nano START_HERE.sh`) and edit the configuration variables at the top. You **MUST** enter your target Windows machine's IP address, or the automation will fail to connect. You can also customize your new admin username and password here.
    ```bash
    export GUAC_USER="admin"
-   export GUAC_PASS="SuperSecurePassword123!"
+   export GUAC_PASS="<set-a-unique-local-password>"
    export WINDOWS_IP="192.168.1.100" # <-- CHANGE THIS
    ```
 4. **Start the automated installation** (The Black Magic) by running:
@@ -62,13 +63,13 @@ If you are not a technical expert, don't worry! Just follow these three simple s
    bash START_HERE.sh
    ```
 
-**Done!** The script will run on its own for a few seconds, download all necessary components, and automatically configure every single detail for you using the IPs and credentials you provided.
+The installer downloads and configures its components using the values in the launcher. Completion of the script is only an installation result: check authentication, the RDP connection, file-transfer permissions and recovery before relying on the service.
 
 ---
 
 ## 🌐 Exposing to the Internet (Nginx Proxy Manager)
 
-*This is the most critical part!* The Guacamole system is now running on your server, but to access it securely from outside your home (e.g., `https://guacamole.yourdomain.com`) with the Green Padlock (SSL), **you must use Nginx Proxy Manager (NPM)**.
+*This is the most critical part!* To access Guacamole from outside your home (e.g., `https://guacamole.yourdomain.com`) with HTTPS, this recipe uses **Nginx Proxy Manager (NPM)**. Other reverse proxies require equivalent HTTPS and WebSocket configuration.
 
 Here is the **STEP-BY-STEP** guide (word for word) on exactly what to click inside Nginx Proxy Manager:
 
@@ -78,6 +79,8 @@ Here is the **STEP-BY-STEP** guide (word for word) on exactly what to click insi
 3. Click the green **Add Proxy Host** button in the top right corner.
 
 ### 2. Configure the "Details" Tab
+
+This is an optional public-ingress recipe. A private VPN-only deployment can keep Guacamole off the public internet. If you expose it, a certificate and proxy settings alone do not establish adequate authentication or access control.
 In the window that opens, fill out the fields *exactly* like this:
 - **Domain Names:** Type your personal domain (e.g., `guacamole.yourdomain.com`) and press Enter.
 - **Scheme:** Leave it as `http`
@@ -96,7 +99,7 @@ Now click on the "SSL" tab at the top of the same window:
 - Finally, click **Save**.
 
 Wait a few seconds. If everything is correct, the window will close and your domain will be online!
-Now go to your browser, type `https://guacamole.yourdomain.com/guacamole/` and you are securely inside your remote computer!
+Now go to your browser, type `https://guacamole.yourdomain.com/guacamole/` and verify that authentication and the intended RDP connection work.
 
 ---
 
@@ -107,7 +110,7 @@ When you run `START_HERE.sh`, we automate the ultimate "Best Practices" without 
 - **Zero-Touch Deployment:** PostgreSQL, Guacd, and Tomcat boot up inside an isolated, secure Docker network.
 - **Auto-Security:** The default `guacadmin` user is permanently destroyed to prevent brute-force attacks.
 - **Extreme RDP Performance:** To eliminate stutter and input lag, we inject these parameters directly into the Guacamole engine:
-  - `16-bit color depth` (Saves 50% of bandwidth)
+  - `16-bit color depth` (reduces colour depth; bandwidth impact depends on the workload)
   - `Disable Wallpaper` (Instant desktop loading)
   - `Disable Animations & Themes` (Zero input lag)
 - **Shared Drive (File Transfer):** Automatically creates a virtual "Network Drive" between your browser and the Windows machine. You can drag-and-drop files directly into your browser window, and they will instantly appear inside the virtual drive on Windows!
@@ -118,3 +121,4 @@ When you run `START_HERE.sh`, we automate the ultimate "Best Practices" without 
 
 - **Want to know how it works under the hood?** Read the [Full Architecture Guide (S.O.A.P.)](docs/FULL_GUIDE.md).
 - **Looking for the original Python codes?** All the raw original Python scripts we wrote to reverse-engineer this technology in our Homelab have been sanitized and preserved in the `scripts/legacy_homelab` folder. Everything else has been merged into the master `scripts/deploy.sh`.
+
